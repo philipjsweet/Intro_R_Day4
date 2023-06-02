@@ -35,7 +35,7 @@ The cell survival data is stored within the 'data' folder, for this reason, we h
 
 ```{r read in S1 data}
 
-read_csv("Data/CFU_data.csv") -> wide_cfu
+read_csv("data/CFU_data.csv") -> wide_cfu
 
 head(wide_cfu)
 
