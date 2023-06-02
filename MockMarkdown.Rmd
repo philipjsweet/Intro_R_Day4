@@ -7,14 +7,20 @@ output: html_document
 
 ## Document Title 
 
-# Goal: 
+### Goal: 
 
 State what the goal of the anaylsis is. You can also include some scienetific background here to explain what you predict the outcome of the analysis will be
 
-# Data: 
+### Data: 
 Describe what data you will be using, where it is coming from and what the variables are. 
 
 Ideally, you will provide enough information in your markdown so that someone who knows very little about the code/project (such as yourself in three years) can open the document and understand why you are working with this data and what the outcome of the analysis was. 
+
+Remember that '##' text will become a formal section, visible in the code navigator as will the labels of code chucks '{r chunk_lable}' so ensure that you are using informative lables. 
+
+You can also embed images in your markdown
+
+![Markdown Code Navigator ](~/Google Drive/2023/R_biocomp_class/R4Biology/Day_4/Data/CodeNav.tiff)
 
 
 ```{r setup, include=FALSE}
@@ -30,7 +36,7 @@ library(cowplot)
 
 ## Data 
 
-read.csv("path/to/data.csv") -> data
+read.csv("data/mock_data.csv") -> data
 
 ## Variables 
 
@@ -38,7 +44,7 @@ day_rep <- "Day_2"
 
 output_file <- c("processed_data.csv")
 
-summary_fig_name < c("summary_fig.tiff")
+summary_fig_name <- c("summary_fig.tiff")
 
 ```
 
@@ -51,8 +57,8 @@ Describe what you will be doing to the data and why. I.e. "the data was colletec
 ## you can use hash comments to explain your code 
 
 data %>%
-  pivot_longer() %>%  ## pivoted data from wide to long
-  mutate() -> tidy_data
+  pivot_longer(VarA:VarB, names_to = "Var", values_to = "Measure") %>%  ## pivoted data from wide to long
+  mutate(day = day_rep) -> tidy_data
 
 ```
 
@@ -62,7 +68,7 @@ Describe what analysis you will conduct (t.test, anova, grouping ect)
 
 ```{r conduct test}
 
-t.test(tidy_data$VarA, tidy_data$Var_B)
+t.test(data$VarA, data$Var_B)
 
 ```
 
@@ -75,18 +81,25 @@ Describe your figure goals
 ```{r figure}
 
 tidy_data %>%
-ggplot(aes(x, y)) %>%
-  geom_boxplot()-> summary_fig
+ggplot(aes(x = Var, y = Measure)) +
+  geom_boxplot() +
+  theme_cowplot()-> summary_fig
+
+summary_fig
 
 ```
 
 Provide some interuprtation of the figure. 
 
+### Final Summary
+
+In this analysis we saw that X and Y are true fo Var A and B on Day Two
+
 ## Save the outputs
 
 ```{r save outputs}
 
-write.csv(summary_fig_name, summary_fig)
+write.csv(tidy_data, output_file)
 
 ggsave(summary_fig_name, summary_fig)
 
