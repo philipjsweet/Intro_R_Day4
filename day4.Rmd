@@ -12,7 +12,7 @@ In this worksheet we will demonstrate writing a report using rmarkdown. In this 
 
 1. Screen four novel fungal peptides for toxicity against *E. infectius* to identify the most promising peptide.
 
-1. Examine the impact of the peptide on cell growth rates 
+2. Examine the impact of the peptide on cell growth rates 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -21,24 +21,29 @@ library(tidyverse)
 
 ```
 
+For this first experiment, you grew up 3 biological replicates of *E. infectius*, split them, and treated each with one of the four fungal peptides (Fo114, Fo321,Fo012, Fo203) or with PBS (negative control). You then plated the treated cultures and plated them in technical triplcate. The follwoing morning, counted the number of *E. infectius* Colony Forming Units (CFU) that grew. 
+
 ## 1.Screen for toxin peptides using CFU Data
 
-# 1.1 Read in the CFU data
+### 1.1 Read in the CFU data
 
-The cell survival data is stored within the 'data' folder, for this reason, we have to point R to the location of the file.
+The cell survival data is stored within the 'data' folder, for this reason, we have to point R to the location of the file. 
+
+*Goal:* To identify a fungal peptide that decreases the number of CFU of *E. infectius*. 
+
+*Data:* Counts of CFU have been collected after exposure of *E. infectius* to four different fungal peptides (Fo114, Fo321,Fo012, Fo203) and a negative control (PBS). Data was collected in biological triplicate and technical triplate, for a total of 9 counts per treatment. The relative ratio will be calculated for each treatment to correct for the differences in CFU between biological replicates.  A two sample t test will be used to determine if the mean ratio of CFU is different from the PBS control after treatment.  
 
 ```{r read in S1 data}
 
-read_csv("data/CFU_data.csv") -> wide_cfu
+read_csv("Data/CFU_data.csv") -> wide_cfu
 
 head(wide_cfu)
 
 ```
-For this first experiment, you grew up 3 biological replicates of *E. infectius*, split them, and treated each with one of the four fungal peptides (Fo114, Fo321,Fo012, Fo203) or with PBS (negative control). You then plated the treated cultures and plated them in technical triplcate. The follwoing morning, counted the number of *E. infectius* Colony Forming Units (CFU) that grew. 
 
-You collected this data before you knew of the wonders of Tidy data. The first step will be to tidy up the data. When you're complete the dataframe should have 45 rows and new column named 'Treatment'. *Bonus* Remove the 'CFU_' from in front of the peptides. This can be done using mutate() and 'str_replace()'
+You collected this data before you knew of the wonders of Tidy data. The first step will be to tidy up the data. When you're complete the dataframe should have 45 rows 'nrow()' and new column named 'Treatment'. *Bonus* Remove the 'CFU_' from in front of the peptides. This can be done using mutate() and 'str_replace()'
 
-# 1.2 Tidy the CFU data
+### 1.2 Tidy the CFU data
 
 ```{r tidy the CFU data}
 
@@ -46,26 +51,27 @@ You collected this data before you knew of the wonders of Tidy data. The first s
 
 ```
 
-# 1.3 Plot the raw CFU data
+### 1.3 Plot the raw CFU data
 
 1. Now make a plot showing the distribution of CFU's per treatment by layering a 'geom_point()' over top of a 'geom_box()'. Color the points by BioRep. 
 
-2. Now try using 'geom_jitter' instead of geom_point and note the difference
+2. Now try using 'geom_jitter' instead of geom_point and note the difference, which is more informative? 
 
 ```{r raw cfu plot}
 
 # R code here
 
 ```
-# 1.4 Calculate the Relative Ratio of CFU per Treatment
 
-Now that we have tidy data, we can use tidyverse functions to calculate the impact of each fungal protein on the number of CFU. To do so, you will need to find the mean number of CFU for the negative control (PBS) for each biological replicate and then divide each row by it's respective mean. 
+### 1.4 Calculate the Relative Ratio of CFU per Treatment
+
+Now that we have tidy data, we can use tidyverse functions to calculate the impact of each fungal protein on the number of CFU. To do so, you will need to find the mean number of CFU for the negative control (PBS) for each *biological replicate* and then divide each count by it's respective mean. 
 
 1. This can be done multiple ways, but one option is group the data by BioRep and then make a column that contains the mean of the CFU's of the PBS-treated cells. 
 
-*Hint* this can be done using 'CFU[Treatment == "PBS"]'
+*Hint* this can be done using 'CFU[Treatment == "PBS"]' 
 
-If done properly, the mean CFU's for the PBS treated A BioRep will be 320.
+If done properly, the mean CFU's for the PBS Treated A BioRep will be 322.
 
 ```{r find relative CFU}
 
@@ -73,11 +79,12 @@ If done properly, the mean CFU's for the PBS treated A BioRep will be 320.
 
 
 ```
+
 2. Now you can divide each replicate by it's respective PBS mean, producing a ratio of treatred/untreated CFU. Call this new column of called "Ratio_CFU". 
 
-3. Make a summary table of the mean and standard deviation of ratio_CFU for each Treatment. If you calculated the ratio correect the mean of Fo321	will be 0.9875
+3. Make a summary table of the mean and standard deviation of ratio_CFU for each Treatment. If you calculated the ratio correctly the mean of Fo321 will be 0.9875
 
-4. Now make the same styple of overlayed 'geom_boxplot'/'geom_jitter' as we made above, but using the ratio CFU data. When using 'geom_boxplots', outlier's are represented using black points. Modify the shape of the 'geom_point()' so that you can clearly distinguish the individual replicates from the boxplot outlier's.
+4. Now make the same style of overlayed 'geom_boxplot'/'geom_jitter' as we made above, but using the ratio CFU data. When using 'geom_boxplots', outlier's are represented using black points. Modify the shape of the 'geom_point()' so that you can clearly distinguish the individual replicates from the boxplot outlier's.
 
 ```{r }
 
@@ -86,9 +93,9 @@ If done properly, the mean CFU's for the PBS treated A BioRep will be 320.
 
 ```
 
-How does the plot for the ratio compare to the plot of the raw counts made in section 1.3? 
+5. How does the plot for the ratio compare to the plot of the raw counts made in section 1.3? 
 
-# 1.5 Determine Statistical Significance 
+### 1.5 Determine Statistical Significance 
 
 Base R has been useful statistical functions. For example, to conduct a T test, we can use the function t.test().
 
@@ -101,13 +108,13 @@ Base R has been useful statistical functions. For example, to conduct a T test, 
 
 ```
 
-## 1.6 Summarize Findings 
+### 1.6 Summarize Findings 
 
-1. Describe the question you are trying to answer in this anaylsis 
+1. Describe the question you are trying to answer in this analysis. 
 
-2. Describe the data coming into the analysis and define the variables 
+2. Describe the data coming into the analysis and define the variables.
 
-3. Make a figure to summarize the impact of the fungus peptides on *E. infectius* using any geom_ besides geom_boxplot and geom_violin and that does not include the PBS control. Also, adjust the size of the axis ticks, rename the lables, give the plot a title, finally, if you use  a legend, place it at the bottom of the plot. 
+3. Make a figure to summarize the impact of the fungus peptides on *E. infectius* using any 'geom_' besides 'geom_boxplot' and 'geom_violin' and that does not include the PBS control. Also, adjust the size of the axis ticks, rename the lables, give the plot a title, finally, if you used a legend, place it at the bottom of the plot. 
 
 ```{r summary figure}
 
@@ -115,7 +122,7 @@ Base R has been useful statistical functions. For example, to conduct a T test, 
 
 ```
 
-4. Summarize the finding, in the context you introduced above
+4. Summarize the finding, in the context you introduced above.
 
 5. Save the final dataframe (the one with Ratio_CFU) using 'write.csv()'
 
@@ -127,26 +134,32 @@ Base R has been useful statistical functions. For example, to conduct a T test, 
 
 ```
 
-## 2 Impact of Fo114 on Growth Rates 
-
-# 2.1 Read in Growth Cruve data
-
 To find the concentration of Fo114 required to disrupt the gorwth of *E. infectius* you conduct a growth curve assay where either *E. infectius* is grown in either 0, 1, 10 or 100uM Fo114. The optical density of the cultures is measured every 15min for 16.5h. 
 
-The plate reader you are using outputs a wide dataset ('Growth_data.csv') where each column is a seperate well and each row is a timepoint. You also have made key ('Platemap.csv') that contains that descriptive data that goes with each well. Start by reading in this data and looking at the structure. 
+The plate reader you are using outputs a wide dataset ('Growth_data.csv') where each column is a separate well and each row is a time point. You also have made key ('Platemap.csv') that contains that descriptive data that goes with each well. 
+
+## 2 Impact of Fo114 on Growth Rates 
+
+*Goal:* To identify the concentration of Fo114 required to disrupt growth of *E. infectius*. 
+
+*Data:* Optical density data (OD600) was collected every 15min for 1000min using a BioScreenC machine (temp = 30C, shaking = medium) of *E. infectius* cells treated with 0, 1, 10 or 100uM of Fo114. We will visually examine the growth curves for disruption. 
+
+### 2.1 Read in Growth Cruve data
+
+Start by reading in this data and looking at the structure. 
 
 ```{r read S2 data}
 
-# read in the data and the plate map, as above you will have to direct R to the files
+# read in the data and the plate map, as above, you will have to direct R to the files
 
 # R code here
 
 ```
-## 2.2 Tidy the Growth Curve Data
+### 2.2 Tidy the Growth Curve Data
 
-To tidy this data, you will need to conver the wide 'Growth Data' into a long format and then join on descritor the data stored in the 'Key' *Hint 1* when pivoting, you can use ':' to select all the columns in between (i.e colA:colX) 
+To tidy this data, you will need to convert the wide 'Growth Data' into a long format and then join on the descripto data stored in the 'ey' *Hint 1* when pivoting, you can use ':' to select all the columns in between (i.e colA:colX) 
 
-If the data has been correctly tidied, the resulting dataframe should have 4080 rows.
+If the data has been correctly tidied, the resulting dataframe should have 4080 rows 'nrow()'.
 
 ```{r tidy growthcruve}
 
@@ -154,15 +167,16 @@ If the data has been correctly tidied, the resulting dataframe should have 4080 
 
 ```
 
-## 2.3 Plot the Growth Curve Data
+### 2.3 Plot the Growth Curve Data
 
-1. Now plot growth curve by [Fo114] using 'geom_smooth', using a differnet color for each Concentration and 'facet_wrap()' to split out the biological replicates. Manually set the colors reflect the increase in concentration.  *Bonus* Transform the x-axis to be in hours instead of minutes
+1. Now plot growth curve by [Fo114] using 'geom_smooth', using a different color for each concentration and 'facet_wrap()' to split out the biological replicates. Manually set the colors to reflect the increase in concentration.  *Bonus* Transform the x-axis to be in hours instead of minutes
 
 ```{r growth cruves}
 
 # R code here
 
 ```
+ 
  2. Which concentration consistenty of Fo114 disrupts the growth of *E. infectius*? 
 
  3. Save the tidy data using 'write.csv()'
