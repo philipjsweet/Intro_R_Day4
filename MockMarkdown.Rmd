@@ -1,0 +1,93 @@
+---
+title: "Mock Markdown"
+author: "Your Name"
+date: "2023-06-02"
+output: html_document
+---
+
+## Document Title 
+
+# Goal: 
+
+State what the goal of the anaylsis is. You can also include some scienetific background here to explain what you predict the outcome of the analysis will be
+
+# Data: 
+Describe what data you will be using, where it is coming from and what the variables are. 
+
+Ideally, you will provide enough information in your markdown so that someone who knows very little about the code/project (such as yourself in three years) can open the document and understand why you are working with this data and what the outcome of the analysis was. 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## This block (if named setup) will always run first. 
+## Place library's need for the script here. You can also read in all your data files and define variables you will use later. By reading in your libraries and data in the first chunk you are ensuring that everything will run smoothly. 
+
+## Libraries 
+
+library(tidyverse)
+library(cowplot)
+
+## Data 
+
+read.csv("path/to/data.csv") -> data
+
+## Variables 
+
+day_rep <- "Day_2"
+
+output_file <- c("processed_data.csv")
+
+summary_fig_name < c("summary_fig.tiff")
+
+```
+
+## Process your data 
+
+Describe what you will be doing to the data and why. I.e. "the data was colletecd in a wide formate, we will begin by tidying it and then finding the ratio of VarA to Var B"
+
+```{r tidy up the data}
+
+## you can use hash comments to explain your code 
+
+data %>%
+  pivot_longer() %>%  ## pivoted data from wide to long
+  mutate() -> tidy_data
+
+```
+
+## Analyze the data
+
+Describe what analysis you will conduct (t.test, anova, grouping ect)
+
+```{r conduct test}
+
+t.test(tidy_data$VarA, tidy_data$Var_B)
+
+```
+
+Interprut the output, is this what you were expecting? Is it significant? are there outlier's?
+
+## Make a summary figure
+
+Describe your figure goals
+
+```{r figure}
+
+tidy_data %>%
+ggplot(aes(x, y)) %>%
+  geom_boxplot()-> summary_fig
+
+```
+
+Provide some interuprtation of the figure. 
+
+## Save the outputs
+
+```{r save outputs}
+
+write.csv(summary_fig_name, summary_fig)
+
+ggsave(summary_fig_name, summary_fig)
+
+```
